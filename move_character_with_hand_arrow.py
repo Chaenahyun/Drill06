@@ -27,7 +27,7 @@ def get_distance(x1, y1, x2, y2):
 running = True
 character_x, character_y = TUK_WIDTH // 2, TUK_HEIGHT // 2
 frame = 0
-hide_cursor()
+
 
 hand_x, hand_y = -100, -100  # 초기화 시 화면 밖에 위치
 

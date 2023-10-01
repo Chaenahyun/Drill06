@@ -1,5 +1,4 @@
 from pico2d import *
-import random
 import time
 import math
 
@@ -12,14 +11,15 @@ hand = load_image('hand_arrow.png')
 
 def handle_events():
     global running
-    global character_x, character_y, hand_x, hand_y, prev_hand_x, prev_hand_y
+    global character_x, character_y, hand_x, hand_y
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
             running = False
-
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+            hand_x, hand_y = event.x, TUK_HEIGHT - 1 - event.y
 
 def get_distance(x1, y1, x2, y2):
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
@@ -29,9 +29,7 @@ character_x, character_y = TUK_WIDTH // 2, TUK_HEIGHT // 2
 frame = 0
 hide_cursor()
 
-hand_x = random.randint(0, TUK_WIDTH - 1)
-hand_y = random.randint(0, TUK_HEIGHT - 1)
-prev_hand_x, prev_hand_y = hand_x, hand_y
+hand_x, hand_y = -100, -100  # 초기화 시 화면 밖에 위치
 
 prev_time = time.time()
 
@@ -41,13 +39,6 @@ while running:
 
     # 화살표와 캐릭터 간의 거리 계산
     distance = get_distance(character_x, character_y, hand_x, hand_y)
-
-    # 캐릭터와 만나면 화살표 위치 변경
-    if distance < 10.0:
-        new_hand_x = random.randint(0, TUK_WIDTH - 1)
-        new_hand_y = random.randint(0, TUK_HEIGHT - 1)
-        if new_hand_x != hand_x or new_hand_y != hand_y:  # 위치가 변경되었을 때만 업데이트
-            hand_x, hand_y = new_hand_x, new_hand_y
 
     # 캐릭터 이동
     move_x, move_y = 0, 0
@@ -72,7 +63,9 @@ while running:
     else:
         character.clip_composite_draw(frame * 100, 100 * 1, 100, 100, 0, 'h', character_x, character_y, 100, 100)
 
-    hand.draw(hand_x, hand_y)
+    if distance < 10.0:
+        # 화살표가 캐릭터에 도달하면 위치 초기화
+        hand_x, hand_y = -100, -100
 
     update_canvas()
     frame = (frame + 1) % 8

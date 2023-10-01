@@ -18,7 +18,7 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
-        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+        elif event.type == SDL_MOUSEMOTION:
             hand_x, hand_y = event.x, TUK_HEIGHT - 1 - event.y
 
 def get_distance(x1, y1, x2, y2):
@@ -27,9 +27,10 @@ def get_distance(x1, y1, x2, y2):
 running = True
 character_x, character_y = TUK_WIDTH // 2, TUK_HEIGHT // 2
 frame = 0
+hide_cursor()
 
-
-hand_x, hand_y = -100, -100  # 초기화 시 화면 밖에 위치
+# 초기화 시 화면 중앙으로 설정
+hand_x, hand_y = TUK_WIDTH // 2, TUK_HEIGHT // 2
 
 prev_time = time.time()
 
@@ -63,9 +64,8 @@ while running:
     else:
         character.clip_composite_draw(frame * 100, 100 * 1, 100, 100, 0, 'h', character_x, character_y, 100, 100)
 
-    if distance < 10.0:
-        # 화살표가 캐릭터에 도달하면 위치 초기화
-        hand_x, hand_y = -100, -100
+    # 화살표 이미지를 마우스 위치에 따라 이동
+    hand.draw(hand_x, hand_y)
 
     update_canvas()
     frame = (frame + 1) % 8
